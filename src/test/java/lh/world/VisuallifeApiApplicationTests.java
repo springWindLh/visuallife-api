@@ -1,4 +1,4 @@
-package com.example;
+package lh.world;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
