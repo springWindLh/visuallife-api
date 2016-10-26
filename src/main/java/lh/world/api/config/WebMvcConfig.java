@@ -3,10 +3,9 @@ package lh.world.api.config;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.google.common.collect.Lists;
+import lh.world.api.filter.SimpleCORSFilter;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -37,5 +36,10 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
         configurer.setLocations(resources.toArray(new Resource[resources.size()]));
         return configurer;
+    }
+
+    @Bean
+    public SimpleCORSFilter getSimpleCORSFilter() {
+        return new SimpleCORSFilter();
     }
 }
