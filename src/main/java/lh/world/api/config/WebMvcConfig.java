@@ -3,13 +3,13 @@ package lh.world.api.config;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.google.common.collect.Lists;
-import lh.world.api.filter.SimpleCORSFilter;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.util.List;
@@ -38,8 +38,12 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         return configurer;
     }
 
-    @Bean
-    public SimpleCORSFilter getSimpleCORSFilter() {
-        return new SimpleCORSFilter();
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedMethods("POST", "GET")
+                .allowedOrigins("*")
+                .allowedHeaders("*")
+                .allowCredentials(false);
     }
 }

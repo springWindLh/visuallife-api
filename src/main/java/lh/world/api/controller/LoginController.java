@@ -3,10 +3,14 @@ package lh.world.api.controller;
 import com.google.common.base.Strings;
 import lh.world.api.controller.support.AjaxResponse;
 import lh.world.api.controller.support.BaseController;
+import lh.world.api.form.LoginForm;
 import lh.world.base.domain.User;
 import lh.world.base.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
@@ -18,9 +22,11 @@ public class LoginController extends BaseController {
     @Autowired
     UserService userService;
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public AjaxResponse login(@RequestParam String nameOrMobile, @RequestParam String password) {
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public AjaxResponse login(@RequestBody LoginForm form) {
         final String errorMsg = "用户名或密码错误";
+        String nameOrMobile = form.getNameOrMobile();
+        String password = form.getPassword();
         if (Strings.isNullOrEmpty(nameOrMobile) || Strings.isNullOrEmpty(password)) {
             return AjaxResponse.fail().msg(errorMsg);
         }
