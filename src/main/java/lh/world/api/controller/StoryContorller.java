@@ -15,7 +15,7 @@ import java.util.Optional;
 /**
  * Created by lh on 2016/10/18.
  */
-@Controller
+@RestController
 @RequestMapping("/story")
 public class StoryContorller extends BaseController {
     @Autowired
