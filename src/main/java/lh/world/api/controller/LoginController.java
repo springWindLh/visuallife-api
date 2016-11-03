@@ -33,7 +33,7 @@ public class LoginController extends BaseController {
         Optional<User> userOptional = userService.verifyUser(nameOrMobile, nameOrMobile, password);
         if (userOptional.isPresent()) {
             getRequest().getSession().setAttribute("user", userOptional.get());
-            return AjaxResponse.ok().msg("登录成功");
+            return AjaxResponse.ok().msg("登录成功").data(userOptional.get());
         } else {
             return AjaxResponse.fail().msg(errorMsg);
         }
