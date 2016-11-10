@@ -36,4 +36,21 @@ public class StoryContorller extends BaseController {
         }
         return AjaxResponse.ok().data(storyOptional.get());
     }
+
+    @RequestMapping(value = "/vote/{id}", method = RequestMethod.POST)
+    public AjaxResponse vote(@PathVariable Long id) {
+        Optional<Story> storyOptional = storyService.findById(id);
+        if (!storyOptional.isPresent()) {
+            return getAjaxResourceNotFound();
+        }
+        Story story = storyOptional.get();
+        int vote = story.getVote() != null ? story.getVote() : 0;
+        story.setVote(vote + 1);
+        try {
+            story = storyService.save(story);
+            return AjaxResponse.ok().msg("点赞成功").data(story);
+        } catch (Exception e) {
+            return AjaxResponse.fail().msg(e.getMessage());
+        }
+    }
 }
