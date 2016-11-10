@@ -2,13 +2,12 @@ package lh.world.api.controller;
 
 import lh.world.api.controller.support.AjaxResponse;
 import lh.world.api.controller.support.BaseController;
+import lh.world.api.form.ReplyForm;
 import lh.world.base.domain.Reply;
-import lh.world.base.form.ReplyForm;
-import lh.world.base.query.support.Query;
+import lh.world.base.domain.User;
 import lh.world.base.service.ReplyService;
 import lh.world.base.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +32,8 @@ public class ReplyController extends BaseController {
             return getErrorInfo(result);
         }
         Reply reply = form.asReply();
-        reply.setSender(getCurrentUser());
+        Optional<User> userOptional = userService.findById(form.getUser().getId());
+        userOptional.ifPresent(reply::setSender);
         try {
             reply = replyService.save(reply, form.getCommentId(), form.getAccepterId());
             return AjaxResponse.ok().msg("发表成功").data(reply);

@@ -3,10 +3,12 @@ package lh.world.api.controller;
 import com.google.common.base.Strings;
 import lh.world.api.controller.support.AjaxResponse;
 import lh.world.api.controller.support.BaseController;
+import lh.world.api.form.CommentForm;
 import lh.world.base.domain.Comment;
-import lh.world.base.form.CommentForm;
+import lh.world.base.domain.User;
 import lh.world.base.query.support.Query;
 import lh.world.base.service.CommentService;
+import lh.world.base.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -24,6 +26,8 @@ import java.util.Optional;
 public class CommentController extends BaseController {
     @Autowired
     CommentService commentService;
+    @Autowired
+    UserService userService;
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public AjaxResponse list(Query query, String targetType, Long targetId) {
@@ -42,7 +46,8 @@ public class CommentController extends BaseController {
             return getErrorInfo(result);
         }
         Comment comment = form.asComment();
-        comment.setUser(getCurrentUser());
+        Optional<User> userOptional = userService.findById(form.getUser().getId());
+        userOptional.ifPresent(comment::setUser);
         try {
             comment = commentService.save(comment);
             return AjaxResponse.ok().msg("发表成功").data(comment);
@@ -77,4 +82,15 @@ public class CommentController extends BaseController {
         }
     }
 
+    @RequestMapping(value = "/count", method = RequestMethod.GET)
+    public AjaxResponse count(String targetType, Long targetId) {
+        Comment.TargetType type = null;
+        if (!Strings.isNullOrEmpty(targetType)) {
+            type = Comment.TargetType.valueOf(targetType);
+        }
+        Query query = new Query();
+        query.setSize(Integer.MAX_VALUE);
+        Page<Comment> page = commentService.listByTargetTypeAndTargetId(type, targetId, false, query);
+        return AjaxResponse.ok().data(page.getTotalElements());
+    }
 }
