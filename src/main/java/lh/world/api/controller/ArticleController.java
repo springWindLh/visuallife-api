@@ -4,10 +4,16 @@ import lh.world.api.controller.support.AjaxResponse;
 import lh.world.api.controller.support.BaseController;
 import lh.world.api.query.ArticleQuery;
 import lh.world.base.domain.Article;
+import lh.world.base.domain.User;
+import lh.world.base.query.support.Query;
 import lh.world.base.service.ArticleService;
+import lh.world.base.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
@@ -19,6 +25,8 @@ import java.util.Optional;
 public class ArticleController extends BaseController {
     @Autowired
     ArticleService articleService;
+    @Autowired
+    UserService userService;
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public AjaxResponse list(ArticleQuery query) {
@@ -50,5 +58,15 @@ public class ArticleController extends BaseController {
         } catch (Exception e) {
             return AjaxResponse.fail().msg(e.getMessage());
         }
+    }
+
+    @RequestMapping(value = "/user/list/{userId}", method = RequestMethod.GET)
+    public AjaxResponse userList(@PathVariable Long userId, Query query) {
+        Optional<User> userOptional = userService.findById(userId);
+        if (!userOptional.isPresent()) {
+            return AjaxResponse.fail().msg("用户信息不存在");
+        }
+        Page<Article> page = articleService.listByUser(userOptional.get(), query, false);
+        return AjaxResponse.ok().data(page);
     }
 }

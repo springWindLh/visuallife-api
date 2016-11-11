@@ -3,11 +3,12 @@ package lh.world.api.controller;
 import lh.world.api.controller.support.AjaxResponse;
 import lh.world.api.controller.support.BaseController;
 import lh.world.base.domain.Story;
+import lh.world.base.domain.User;
 import lh.world.base.query.support.Query;
 import lh.world.base.service.StoryService;
+import lh.world.base.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -20,6 +21,8 @@ import java.util.Optional;
 public class StoryContorller extends BaseController {
     @Autowired
     StoryService storyService;
+    @Autowired
+    UserService userService;
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
@@ -52,5 +55,15 @@ public class StoryContorller extends BaseController {
         } catch (Exception e) {
             return AjaxResponse.fail().msg(e.getMessage());
         }
+    }
+
+    @RequestMapping(value = "/user/list/{userId}", method = RequestMethod.GET)
+    public AjaxResponse userList(@PathVariable Long userId, Query query) {
+        Optional<User> userOptional = userService.findById(userId);
+        if (!userOptional.isPresent()) {
+            return AjaxResponse.fail().msg("用户信息不存在");
+        }
+        Page<Story> page = storyService.listByUser(userOptional.get(), query, false);
+        return AjaxResponse.ok().data(page);
     }
 }
