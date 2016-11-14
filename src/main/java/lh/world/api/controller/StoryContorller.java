@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 /**
  * Created by lh on 2016/10/18.
  */
@@ -65,5 +67,16 @@ public class StoryContorller extends BaseController {
         }
         Page<Story> page = storyService.listByUser(userOptional.get(), query, false);
         return AjaxResponse.ok().data(page);
+    }
+
+    @RequestMapping(value = "/remove", method = RequestMethod.POST)
+    @ResponseBody
+    public AjaxResponse remove(@RequestBody Long[] ids) {
+        try {
+            storyService.remove(ids);
+            return AjaxResponse.ok().msg("删除成功");
+        } catch (Exception e) {
+            return AjaxResponse.fail().msg(e.getMessage());
+        }
     }
 }

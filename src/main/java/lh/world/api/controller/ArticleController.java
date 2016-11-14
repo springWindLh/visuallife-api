@@ -10,12 +10,11 @@ import lh.world.base.service.ArticleService;
 import lh.world.base.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 /**
  * Created by lh on 2016/10/17.
@@ -68,5 +67,15 @@ public class ArticleController extends BaseController {
         }
         Page<Article> page = articleService.listByUser(userOptional.get(), query, false);
         return AjaxResponse.ok().data(page);
+    }
+
+    @RequestMapping(value = "/remove", method = RequestMethod.POST)
+    public AjaxResponse remove(@RequestBody Long[] ids) {
+        try {
+            articleService.remove(ids);
+            return AjaxResponse.ok().msg("删除成功");
+        } catch (Exception e) {
+            return AjaxResponse.fail().msg(e.getMessage());
+        }
     }
 }
