@@ -9,6 +9,7 @@ import lh.world.base.form.UserForm;
 import lh.world.base.service.UserService;
 import lh.world.base.util.EncrptUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,9 @@ import java.util.Optional;
 public class LoginController extends BaseController {
     @Autowired
     UserService userService;
+
+    @Value("${qiniu_domain}")
+    private String domain;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public AjaxResponse login(@RequestBody LoginForm form) {
@@ -50,6 +54,7 @@ public class LoginController extends BaseController {
         User user = form.asUser();
         user.setPassword(EncrptUtil.encodePassword(user.getPassword()));
         user.setRole(User.Role.USER);
+        user.setAvatar(domain + "/avatar.jpg");
         try {
              User currentUser = userService.save(user);
             return AjaxResponse.ok().msg("注册成功").data(currentUser);
